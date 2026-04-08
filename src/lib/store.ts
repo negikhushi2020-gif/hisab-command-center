@@ -185,7 +185,13 @@ const syncToServer = (state: BusinessState) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(state),
-  }).catch(() => {});
+  }).then(res => {
+    if (!res.ok) {
+      res.json().then(data => console.warn("Server error:", data)).catch(() => {});
+    }
+  }).catch((err) => {
+    console.warn("Sync failed:", err);
+  });
 };
 
 const parseBusinessState = (raw: string | null): BusinessState => {
