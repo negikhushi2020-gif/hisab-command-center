@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hisab Command Center
 
-## Getting Started
+Business dashboard for partner investments, inventory, sales, expenses, withdrawals, cash in hand, and net worth.
 
-First, run the development server:
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Data Storage Model
 
-To learn more about Next.js, take a look at the following resources:
+- Local development fallback: `data/hisab-state.json`
+- Vercel production: Vercel KV via `@vercel/kv`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The API route automatically uses Vercel KV when KV env vars are available.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy to Vercel
 
-## Deploy on Vercel
+1. Import this repository in Vercel.
+2. Add KV to the Vercel project (Storage -> KV).
+3. Ensure env vars are present in Vercel:
+	- `KV_REST_API_URL`
+	- `KV_REST_API_TOKEN`
+4. Deploy.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Important
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Keep periodic backups using the Admin export/import tools.
+- Current data snapshot is included in `data/hisab-state.json` for local fallback/migration.

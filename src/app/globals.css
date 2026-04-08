@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink-1: #0f1b2e;
+  --ink-2: #26415f;
+  --paper: #f6f8f3;
+  --mint: #9fe0d2;
+  --sky: #a5d8ff;
+  --amber: #ffbc66;
+  --rose: #ff8f8f;
+  --shadow: rgba(15, 27, 46, 0.12);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-sora);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 10% 15%, rgba(159, 224, 210, 0.8) 0, rgba(159, 224, 210, 0) 35%),
+    radial-gradient(circle at 85% 8%, rgba(255, 188, 102, 0.75) 0, rgba(255, 188, 102, 0) 30%),
+    linear-gradient(170deg, #f8fbf7 0%, #e9f3ff 45%, #fef5e8 100%);
+  color: var(--ink-1);
+  font-family: var(--font-dm-sans), "Segoe UI", sans-serif;
+}
+
+.display-font {
+  font-family: var(--font-sora), "Segoe UI", sans-serif;
+}
+
+.glass {
+  backdrop-filter: blur(9px);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 14px 45px var(--shadow);
+}
+
+.rise-in {
+  animation: rise-in 700ms ease-out both;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

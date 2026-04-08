@@ -1,0 +1,344 @@
+{
+  "partners": [
+    "Manav",
+    "Rahul"
+  ],
+  "loan": {
+    "principal": 117250,
+    "monthlyInterest": 1750,
+    "repayments": []
+  },
+  "inventory": [
+    {
+      "id": "id-mnpuchyr-fhhsy",
+      "title": "XFX 570",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 15960,
+      "purchaseCashAfter": 13530
+    },
+    {
+      "id": "id-mnpuc3w7-zdx8u",
+      "title": "Zotac 1050 ti",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 18390,
+      "purchaseCashAfter": 15960
+    },
+    {
+      "id": "id-mnpubhmz-be0p5",
+      "title": "Asus 580 8GB (DVI)",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 20820,
+      "purchaseCashAfter": 18390
+    },
+    {
+      "id": "id-mnpuadl9-nmm44",
+      "title": "INNO 3d 1060 6gb",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 23250,
+      "purchaseCashAfter": 20820
+    },
+    {
+      "id": "id-mnpu9lp3-gtrqg",
+      "title": "Zotac 1060 3GB",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 25680,
+      "purchaseCashAfter": 23250
+    },
+    {
+      "id": "id-mnpu8qy1-4modv",
+      "title": "Zotac 1060 6GB",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 28110,
+      "purchaseCashAfter": 25680
+    },
+    {
+      "id": "id-mnpu8403-iu6sx",
+      "title": "Zotac 1050ti",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2430,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 30540,
+      "purchaseCashAfter": 28110
+    },
+    {
+      "id": "id-mnptl2l2-30q2e",
+      "title": "Lenovo C typr Adapter + Cable",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 4,
+      "purchasedQuantity": 6,
+      "unitCost": 400,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 2400,
+      "purchaseCashAfter": 0
+    },
+    {
+      "id": "id-mnptikj7-f0cnv",
+      "title": "hp adapter + Cable",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 250,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 2650,
+      "purchaseCashAfter": 2400
+    },
+    {
+      "id": "id-mnpteuj4-7zpd9",
+      "title": "HP laptop 5th gen",
+      "category": "GPU",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 6000,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 8650,
+      "purchaseCashAfter": 2650
+    },
+    {
+      "id": "id-mnpte4f0-wxppg",
+      "title": "Acer i3 6th",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 4,
+      "purchasedQuantity": 4,
+      "unitCost": 2000,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 16650,
+      "purchaseCashAfter": 8650
+    },
+    {
+      "id": "id-mnptcspl-c23te",
+      "title": "256 GB SATA",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 2500,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 19150,
+      "purchaseCashAfter": 16650
+    },
+    {
+      "id": "id-mnptatc9-w204d",
+      "title": "256 GB NVME",
+      "category": "Full Desktop",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 2,
+      "unitCost": 2500,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 24150,
+      "purchaseCashAfter": 19150
+    },
+    {
+      "id": "id-mnpta8b7-c35ug",
+      "title": "E490",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 2,
+      "purchasedQuantity": 2,
+      "unitCost": 9500,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 43150,
+      "purchaseCashAfter": 24150
+    },
+    {
+      "id": "id-mnpt963m-ouyiq",
+      "title": "E470",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 1,
+      "purchasedQuantity": 1,
+      "unitCost": 8500,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 51650,
+      "purchaseCashAfter": 43150
+    },
+    {
+      "id": "id-mnpt71t7-0anh6",
+      "title": "L490",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 2,
+      "purchasedQuantity": 2,
+      "unitCost": 8500,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 68650,
+      "purchaseCashAfter": 51650
+    },
+    {
+      "id": "id-mnpt4p4i-mzzvp",
+      "title": "Lenovo L14 Gen 2",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 2,
+      "purchasedQuantity": 2,
+      "unitCost": 12800,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 94250,
+      "purchaseCashAfter": 68650
+    },
+    {
+      "id": "id-mnpt2pvm-ogazv",
+      "title": "Lenovo L14 gen 1",
+      "category": "Laptop",
+      "unit": "pcs",
+      "quantity": 0,
+      "purchasedQuantity": 2,
+      "unitCost": 11500,
+      "purchasedOn": "2026-04-08",
+      "purchaseCashBefore": 117250,
+      "purchaseCashAfter": 94250
+    }
+  ],
+  "sales": [
+    {
+      "id": "id-mnptow4z-sbz6i",
+      "items": [
+        {
+          "inventoryItemId": "id-mnpt2pvm-ogazv",
+          "itemTitle": "Lenovo L14 gen 1",
+          "unit": "pcs",
+          "quantity": 2,
+          "unitCost": 11500
+        },
+        {
+          "inventoryItemId": "id-mnptl2l2-30q2e",
+          "itemTitle": "Lenovo C typr Adapter + Cable",
+          "unit": "pcs",
+          "quantity": 2,
+          "unitCost": 400
+        },
+        {
+          "inventoryItemId": "id-mnptatc9-w204d",
+          "itemTitle": "256 GB NVME",
+          "unit": "pcs",
+          "quantity": 1,
+          "unitCost": 2500
+        }
+      ],
+      "saleValue": 33600,
+      "receivedAmount": 33600,
+      "costBasis": 26300,
+      "soldOn": "2026-04-08",
+      "cashBefore": 30540,
+      "cashAfter": 64140
+    }
+  ],
+  "expenses": [
+    {
+      "id": "id-mnpuepyp-wqvub",
+      "category": "Other",
+      "paymentStatus": "Paid",
+      "paidAmount": 200,
+      "amount": 200,
+      "note": "Rahul Petrol",
+      "spentOn": "2026-04-08",
+      "cashBefore": 13530,
+      "cashAfter": 13330
+    },
+    {
+      "id": "id-mnptzizv-9qbou",
+      "category": "Packaging",
+      "paymentStatus": "Paid",
+      "paidAmount": 200,
+      "amount": 200,
+      "note": "Thermacol",
+      "spentOn": "2026-04-08",
+      "cashBefore": 30740,
+      "cashAfter": 30540
+    },
+    {
+      "id": "id-mnptyz0p-prmwp",
+      "category": "Packaging",
+      "paymentStatus": "Paid",
+      "paidAmount": 500,
+      "amount": 500,
+      "note": "Buuble roll",
+      "spentOn": "2026-04-08",
+      "cashBefore": 31240,
+      "cashAfter": 30740
+    },
+    {
+      "id": "id-mnptupc5-arzzs",
+      "category": "Ads",
+      "paymentStatus": "Paid",
+      "paidAmount": 2000,
+      "amount": 2000,
+      "note": "Sell GPU ad",
+      "spentOn": "2026-04-08",
+      "cashBefore": 33240,
+      "cashAfter": 31240
+    },
+    {
+      "id": "id-mnptow4z-s9c78",
+      "category": "Shipping",
+      "paymentStatus": "Paid",
+      "paidAmount": 360,
+      "amount": 360,
+      "note": "Sale expense for Lenovo L14 gen 1, Lenovo C typr Adapter + Cable",
+      "spentOn": "2026-04-08"
+    }
+  ],
+  "withdrawals": [],
+  "tasks": [
+    {
+      "id": "t-1",
+      "title": "Pay April Interest",
+      "dueDate": "2026-04-01",
+      "done": true
+    },
+    {
+      "id": "t-2",
+      "title": "Reconcile 30-day sales report",
+      "dueDate": "2026-04-05",
+      "done": false
+    }
+  ],
+  "investments": [
+    {
+      "id": "legacy-rahul-investment",
+      "partner": "Rahul",
+      "amount": 117250,
+      "investedOn": "2026-04-08",
+      "note": "Migrated from legacy loan principal",
+      "cashBefore": 0,
+      "cashAfter": 117250
+    }
+  ]
+}
