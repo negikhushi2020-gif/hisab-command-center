@@ -179,14 +179,19 @@ let clientInitialized = false;
 let serverSyncDone = false;
 let serverPollStarted = false;
 let lastServerSignature = "";
+let lastSyncTime = 0;  // Track when we last synced to prevent polling override
 
 const syncToServer = (state: BusinessState) => {
+  lastSyncTime = Date.now();  // Mark sync attempt time
   fetch("/api/state", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(state),
   }).then(res => {
-    if (!res.ok) {
+    if (res.ok) {
+      // Mark successful sync - polling can now update
+      lastServerSignature = stateSignature(state);
+    } else {
       res.json().then(data => console.warn("Server error:", data)).catch(() => {});
     }
   }).catch((err) => {
@@ -234,6 +239,14 @@ const initClientSnapshot = () => {
 
         // No-op when browser already has the latest state.
         if (signature === lastServerSignature) {
+          return;
+        }
+
+        // During sync grace period (3s after sync), trust local state over server
+        // This prevents polling from reverting changes before they save
+        const timeSinceSync = Date.now() - lastSyncTime;
+        if (timeSinceSync < 3000) {
+          // We just synced - don't let server override our local state yet
           return;
         }
 
