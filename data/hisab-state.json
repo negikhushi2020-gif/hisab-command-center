@@ -262,6 +262,17 @@
   ],
   "expenses": [
     {
+      "id": "id-mnpv1kr5-vgw9n",
+      "category": "Ads",
+      "paymentStatus": "Paid",
+      "paidAmount": 2000,
+      "amount": 2000,
+      "note": "Initial laptop ads which failed",
+      "spentOn": "2026-04-08",
+      "cashBefore": 13330,
+      "cashAfter": 11330
+    },
+    {
       "id": "id-mnpuepyp-wqvub",
       "category": "Other",
       "paymentStatus": "Paid",
