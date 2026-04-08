@@ -180,8 +180,10 @@ let serverSyncDone = false;
 let serverPollStarted = false;
 let lastServerSignature = "";
 let lastSyncTime = 0;  // Track when we last synced to prevent polling override
+let hasPendingServerWrite = false;
 
 const syncToServer = (state: BusinessState) => {
+  hasPendingServerWrite = true;
   lastSyncTime = Date.now();  // Mark sync attempt time
   fetch("/api/state", {
     method: "POST",
@@ -190,6 +192,7 @@ const syncToServer = (state: BusinessState) => {
   }).then(res => {
     if (res.ok) {
       // Mark successful sync - polling can now update
+      hasPendingServerWrite = false;
       lastServerSignature = stateSignature(state);
     } else {
       res.json().then(data => console.warn("Server error:", data)).catch(() => {});
@@ -227,6 +230,12 @@ const initClientSnapshot = () => {
   clientInitialized = true;
 
   const pullLatestFromServer = () => {
+    // If local changes could not be persisted, do not allow stale server
+    // state to overwrite in-browser data.
+    if (hasPendingServerWrite) {
+      return;
+    }
+
     fetch("/api/state")
       .then((res) => res.json())
       .then((data: unknown) => {
