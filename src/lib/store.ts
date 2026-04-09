@@ -305,9 +305,36 @@ const initClientSnapshot = () => {
   }
 
   // Keep all browser tabs/devices in sync by polling the server snapshot.
+  // Only poll when tab is visible to save Upstash free-tier requests.
   if (!serverPollStarted) {
     serverPollStarted = true;
-    setInterval(pullLatestFromServer, 2500);
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+    const startPolling = () => {
+      if (!pollInterval) {
+        pollInterval = setInterval(pullLatestFromServer, 10_000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    };
+
+    // Start immediately if tab is visible
+    if (!document.hidden) startPolling();
+
+    // Pause polling when tab is hidden, resume when visible
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        pullLatestFromServer(); // Immediately sync when tab becomes visible
+        startPolling();
+      }
+    });
   }
 };
 
