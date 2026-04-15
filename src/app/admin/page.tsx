@@ -1355,11 +1355,26 @@ export default function AdminPage() {
                     const file = event.target.files?.[0];
                     if (!file) return;
                     const reader = new FileReader();
-                    reader.onload = (e) => {
+                    reader.onload = async (e) => {
                       try {
                         const text = e.target?.result as string;
-                        JSON.parse(text); // validate it's valid JSON
+                        const parsed = JSON.parse(text); // validate it's valid JSON
+                        
+                        // 1. Set to localStorage
                         window.localStorage.setItem("hisab.business.state.v1", text);
+                        
+                        // 2. Sync to server immediately before reload
+                        try {
+                          await fetch("/api/state", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: text,
+                          });
+                        } catch {
+                          // Server sync failed but local data is set — continue
+                        }
+                        
+                        // 3. Reload to apply changes
                         window.location.reload();
                       } catch {
                         alert("Invalid backup file. Please choose a valid Hisab JSON export.");
