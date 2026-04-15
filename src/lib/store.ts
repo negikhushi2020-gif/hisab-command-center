@@ -148,6 +148,10 @@ const normalizeState = (state: BusinessState): BusinessState => {
       category: isExpenseCategory(expense.category) ? expense.category : "Other",
       paidAmount,
       paymentStatus,
+      saleId:
+        typeof (expense as { saleId?: unknown }).saleId === "string"
+          ? (expense as { saleId: string }).saleId
+          : undefined,
       cashBefore:
         typeof (expense as { cashBefore?: unknown }).cashBefore === "number"
           ? (expense as { cashBefore: number }).cashBefore

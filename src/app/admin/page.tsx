@@ -15,7 +15,7 @@ import {
   withdrawnByPartner,
 } from "@/lib/finance";
 import { id, useBusinessState } from "@/lib/store";
-import { ExpenseCategory, PartnerName, SaleItem, UnitType } from "@/lib/types";
+import { Expense, ExpenseCategory, PartnerName, SaleItem, UnitType } from "@/lib/types";
 
 const expenseCategories: ExpenseCategory[] = [
   "Packaging",
@@ -96,6 +96,14 @@ export default function AdminPage() {
     }),
     [state],
   );
+
+  const getSaleLinkedExpenseAmount = (expenses: Expense[], saleId: string) =>
+    expenses
+      .filter((expense) => expense.saleId === saleId)
+      .reduce((sum, expense) => sum + expense.paidAmount, 0);
+
+  const removeSaleLinkedExpenses = (expenses: Expense[], saleId: string) =>
+    expenses.filter((expense) => expense.saleId !== saleId);
 
   const ledgerRows = useMemo(() => {
     type EntryType = "Investment" | "Purchase" | "Sale" | "Expense" | "Withdrawal";
@@ -183,6 +191,7 @@ export default function AdminPage() {
       return {
         ...prev,
         inventory: inventoryRestored,
+        expenses: removeSaleLinkedExpenses(prev.expenses, saleId),
         sales: prev.sales.filter((entry) => entry.id !== saleId),
       };
     });
@@ -315,12 +324,16 @@ export default function AdminPage() {
   const startEditSale = (saleId: string) => {
     const sale = state.sales.find((s) => s.id === saleId);
     if (!sale) return;
+
+    const linkedExpenses = state.expenses.filter((expense) => expense.saleId === saleId);
+    const extraExpenseAmount = linkedExpenses.reduce((sum, expense) => sum + expense.paidAmount, 0);
+
     setSaleItems(sale.items.map((it) => ({ ...it })));
     setSaleTotals({
       saleValue: String(sale.saleValue),
       receivedAmount: String(sale.receivedAmount),
-      extraExpenseAmount: "",
-      extraExpenseCategory: "Shipping",
+      extraExpenseAmount: extraExpenseAmount ? String(extraExpenseAmount) : "",
+      extraExpenseCategory: linkedExpenses[0]?.category ?? "Shipping",
     });
     setEditingSaleId(saleId);
     // Scroll form into view
@@ -333,6 +346,7 @@ export default function AdminPage() {
     const saleValue = Number(saleTotals.saleValue || "0");
     const receivedAmountInput = Number(saleTotals.receivedAmount || "0");
     const extraExpenseAmount = Number(saleTotals.extraExpenseAmount || "0");
+    const saleId = editingSaleId ?? id();
 
     setState((prev) => {
       const computedSaleValue = saleValue > 0 ? saleValue : receivedAmountInput;
@@ -348,12 +362,29 @@ export default function AdminPage() {
         ),
       );
 
+      const saleExpenseNote = `Sale expense for ${saleItems.map((it) => it.itemTitle).join(", ")}`;
+      const nextSaleExpense = extraExpenseAmount > 0
+        ? [
+            {
+              id: id(),
+              category: saleTotals.extraExpenseCategory,
+              paymentStatus: "Paid" as const,
+              paidAmount: extraExpenseAmount,
+              amount: extraExpenseAmount,
+              note: saleExpenseNote,
+              spentOn: soldOn,
+              saleId,
+            },
+          ]
+        : [];
+
       if (editingSaleId) {
-        // --- UPDATE existing sale ---
         const originalSale = prev.sales.find((s) => s.id === editingSaleId);
         if (!originalSale) return prev;
 
-        // Step 1: restore inventory from original sale items
+        const originalSaleExpense = getSaleLinkedExpenseAmount(prev.expenses, editingSaleId);
+        const baselineCash = cashInHand(prev) - originalSale.receivedAmount + originalSaleExpense;
+
         let nextInventory = prev.inventory;
         for (const oi of originalSale.items) {
           nextInventory = nextInventory.map((it) =>
@@ -363,7 +394,6 @@ export default function AdminPage() {
           );
         }
 
-        // Step 2: deduct new sale items
         for (const si of saleItems) {
           const invItem = nextInventory.find((it) => it.id === si.inventoryItemId);
           if (!invItem || si.quantity > invItem.quantity) return prev;
@@ -374,21 +404,10 @@ export default function AdminPage() {
           );
         }
 
-        const nextExpenses =
-          extraExpenseAmount > 0
-            ? [
-                {
-                  id: id(),
-                  category: saleTotals.extraExpenseCategory,
-                  paymentStatus: "Paid" as const,
-                  paidAmount: extraExpenseAmount,
-                  amount: extraExpenseAmount,
-                  note: `Sale expense for ${saleItems.map((it) => it.itemTitle).join(", ")}`,
-                  spentOn: soldOn,
-                },
-                ...prev.expenses,
-              ]
-            : prev.expenses;
+        const nextExpenses = [
+          ...nextSaleExpense,
+          ...removeSaleLinkedExpenses(prev.expenses, editingSaleId),
+        ];
 
         return {
           ...prev,
@@ -402,15 +421,14 @@ export default function AdminPage() {
                   saleValue: computedSaleValue,
                   receivedAmount: computedReceived,
                   costBasis,
-                  cashBefore: cashInHand(prev),
-                  cashAfter: cashInHand(prev) + computedReceived - extraExpenseAmount,
+                  cashBefore: baselineCash,
+                  cashAfter: baselineCash + computedReceived - extraExpenseAmount,
                 }
               : s,
           ),
         };
       }
 
-      // --- ADD new sale ---
       let nextInventory = prev.inventory;
       for (const si of saleItems) {
         const invItem = nextInventory.find((it) => it.id === si.inventoryItemId);
@@ -422,29 +440,13 @@ export default function AdminPage() {
         );
       }
 
-      const nextExpenses =
-        extraExpenseAmount > 0
-          ? [
-              {
-                id: id(),
-                category: saleTotals.extraExpenseCategory,
-                paymentStatus: "Paid" as const,
-                paidAmount: extraExpenseAmount,
-                amount: extraExpenseAmount,
-                note: `Sale expense for ${saleItems.map((it) => it.itemTitle).join(", ")}`,
-                spentOn: soldOn,
-              },
-              ...prev.expenses,
-            ]
-          : prev.expenses;
-
       return {
         ...prev,
         inventory: nextInventory,
-        expenses: nextExpenses,
+        expenses: [...nextSaleExpense, ...prev.expenses],
         sales: [
           {
-            id: id(),
+            id: saleId,
             items: saleItems,
             saleValue: computedSaleValue,
             receivedAmount: computedReceived,
@@ -499,23 +501,29 @@ export default function AdminPage() {
     if (paidAmount > availableCash) return;
 
     if (editingExpenseId) {
-      setState((prev) => ({
-        ...prev,
-        expenses: prev.expenses.map((e) =>
-          e.id === editingExpenseId
-            ? {
-                ...e,
-                category: expenseForm.category,
-                paymentStatus,
-                paidAmount,
-                amount,
-                note: expenseForm.note.trim() || `${expenseForm.category} expense`,
-                cashBefore: cashInHand(prev),
-                cashAfter: cashInHand(prev) - paidAmount,
-              }
-            : e,
-        ),
-      }));
+      setState((prev) => {
+        const originalExpense = prev.expenses.find((e) => e.id === editingExpenseId);
+        const baselineCash = cashInHand(prev) + (originalExpense?.paidAmount ?? 0);
+        if (paidAmount > baselineCash) return prev;
+
+        return {
+          ...prev,
+          expenses: prev.expenses.map((e) =>
+            e.id === editingExpenseId
+              ? {
+                  ...e,
+                  category: expenseForm.category,
+                  paymentStatus,
+                  paidAmount,
+                  amount,
+                  note: expenseForm.note.trim() || `${expenseForm.category} expense`,
+                  cashBefore: baselineCash,
+                  cashAfter: baselineCash - paidAmount,
+                }
+              : e,
+          ),
+        };
+      });
     } else {
       setState((prev) => ({
         ...prev,

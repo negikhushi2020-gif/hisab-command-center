@@ -49,6 +49,7 @@ export type Expense = {
   amount: number;
   note: string;
   spentOn: string;
+  saleId?: string;
   cashBefore?: number;
   cashAfter?: number;
 };
