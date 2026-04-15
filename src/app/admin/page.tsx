@@ -97,6 +97,97 @@ export default function AdminPage() {
     [state],
   );
 
+  const ledgerRows = useMemo(() => {
+    type EntryType = "Investment" | "Purchase" | "Sale" | "Expense" | "Withdrawal";
+    const order: Record<EntryType, number> = {
+      Investment: 0,
+      Purchase: 1,
+      Sale: 2,
+      Expense: 3,
+      Withdrawal: 4,
+    };
+
+    const entries = [
+      ...state.investments.map((entry) => ({
+        date: entry.investedOn,
+        type: "Investment" as const,
+        badge: "#b5f0c8",
+        description: `${entry.partner}${entry.note ? ` · ${entry.note}` : ""}`,
+        amount: entry.amount,
+        effect: "+" as const,
+      })),
+      ...state.inventory.map((entry) => ({
+        date: entry.purchasedOn,
+        type: "Purchase" as const,
+        badge: "#a5d8ff",
+        description: `${entry.title} × ${entry.purchasedQuantity} @ ${formatINR(entry.unitCost)}`,
+        amount: entry.purchasedQuantity * entry.unitCost,
+        effect: "-" as const,
+      })),
+      ...state.sales.map((entry) => ({
+        date: entry.soldOn,
+        type: "Sale" as const,
+        badge: "#9fe0d2",
+        description: entry.items.map((it) => `${it.itemTitle} ×${it.quantity}`).join(", "),
+        amount: entry.receivedAmount,
+        effect: "+" as const,
+      })),
+      ...state.expenses.map((entry) => ({
+        date: entry.spentOn,
+        type: "Expense" as const,
+        badge: "#ffbc66",
+        description: `${entry.category}${entry.note ? ` · ${entry.note}` : ""}`,
+        amount: entry.paidAmount,
+        effect: "-" as const,
+      })),
+      ...state.withdrawals.map((entry) => ({
+        date: entry.withdrawnOn,
+        type: "Withdrawal" as const,
+        badge: "#ff8f8f",
+        description: `${entry.partner} withdrawal`,
+        amount: entry.amount,
+        effect: "-" as const,
+      })),
+    ];
+
+    let balance = 0;
+    return entries
+      .sort((a, b) => {
+        const dateComparison = a.date.localeCompare(b.date);
+        if (dateComparison !== 0) return dateComparison;
+        return order[a.type] - order[b.type];
+      })
+      .map((entry) => {
+        const cashBefore = balance;
+        balance += entry.effect === "+" ? entry.amount : -entry.amount;
+        return {
+          ...entry,
+          cashBefore,
+          cashAfter: balance,
+        };
+      })
+      .reverse();
+  }, [state]);
+
+  const deleteSale = (saleId: string) => {
+    setState((prev) => {
+      const sale = prev.sales.find((entry) => entry.id === saleId);
+      if (!sale) return prev;
+
+      const inventoryRestored = prev.inventory.map((item) => {
+        const soldItem = sale.items.find((it) => it.inventoryItemId === item.id);
+        if (!soldItem) return item;
+        return { ...item, quantity: item.quantity + soldItem.quantity };
+      });
+
+      return {
+        ...prev,
+        inventory: inventoryRestored,
+        sales: prev.sales.filter((entry) => entry.id !== saleId),
+      };
+    });
+  };
+
   const addInvestment = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const amount = Number(investmentForm.amount);
@@ -691,7 +782,17 @@ export default function AdminPage() {
                         inventory: prev.inventory.filter((entry) => entry.id !== item.id),
                       }))
                     }
-                    className="rounded-full bg-[#ff8f8f] px-3 py-1 text-xs font-semibold text-[#0f1b2e]"
+                    disabled={item.quantity !== item.purchasedQuantity}
+                    title={
+                      item.quantity !== item.purchasedQuantity
+                        ? "Cannot delete a sold or partially sold purchase because it would corrupt cash tracking"
+                        : "Delete this inventory purchase"
+                    }
+                    className={`rounded-full px-3 py-1 text-xs font-semibold text-[#0f1b2e] ${
+                      item.quantity !== item.purchasedQuantity
+                        ? "bg-[#f3f4f6] cursor-not-allowed"
+                        : "bg-[#ff8f8f]"
+                    }`}
                   >
                     Delete
                   </button>
@@ -878,12 +979,7 @@ export default function AdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        setState((prev) => ({
-                          ...prev,
-                          sales: prev.sales.filter((entry) => entry.id !== sale.id),
-                        }))
-                      }
+                      onClick={() => deleteSale(sale.id)}
                       className="rounded-full bg-[#ff8f8f] px-2 py-1 font-semibold text-[#0f1b2e]"
                     >
                       Delete
@@ -1154,60 +1250,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {[
-                  ...state.investments.map((e) => ({
-                    date: e.investedOn,
-                    type: "Investment" as const,
-                    badge: "#b5f0c8",
-                    description: `${e.partner}${e.note ? ` · ${e.note}` : ""}`,
-                    amount: e.amount,
-                    cashBefore: e.cashBefore,
-                    cashAfter: e.cashAfter,
-                    effect: "+",
-                  })),
-                  ...state.inventory.map((e) => ({
-                    date: e.purchasedOn,
-                    type: "Purchase" as const,
-                    badge: "#a5d8ff",
-                    description: `${e.title} × ${e.purchasedQuantity} @ ${formatINR(e.unitCost)}`,
-                    amount: e.purchasedQuantity * e.unitCost,
-                    cashBefore: e.purchaseCashBefore,
-                    cashAfter: e.purchaseCashAfter,
-                    effect: "−",
-                  })),
-                  ...state.sales.map((e) => ({
-                    date: e.soldOn,
-                    type: "Sale" as const,
-                    badge: "#9fe0d2",
-                    description: e.items.map((it) => `${it.itemTitle} ×${it.quantity}`).join(", "),
-                    amount: e.receivedAmount,
-                    cashBefore: e.cashBefore,
-                    cashAfter: e.cashAfter,
-                    effect: "+",
-                  })),
-                  ...state.expenses.map((e) => ({
-                    date: e.spentOn,
-                    type: "Expense" as const,
-                    badge: "#ffbc66",
-                    description: `${e.category}${e.note ? ` · ${e.note}` : ""}`,
-                    amount: e.paidAmount,
-                    cashBefore: e.cashBefore,
-                    cashAfter: e.cashAfter,
-                    effect: "−",
-                  })),
-                  ...state.withdrawals.map((e) => ({
-                    date: e.withdrawnOn,
-                    type: "Withdrawal" as const,
-                    badge: "#ff8f8f",
-                    description: `${e.partner} withdrawal`,
-                    amount: e.amount,
-                    cashBefore: e.cashBefore,
-                    cashAfter: e.cashAfter,
-                    effect: "−",
-                  })),
-                ]
-                  .sort((a, b) => b.date.localeCompare(a.date))
-                  .map((row, i) => (
+                {ledgerRows.map((row, i) => (
                     <tr key={i} className="border-t border-white/70 hover:bg-white/60">
                       <td className="px-3 py-2 text-[#26415f]">{row.date}</td>
                       <td className="px-3 py-2">
