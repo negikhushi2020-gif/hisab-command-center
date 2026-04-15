@@ -97,13 +97,22 @@ export default function AdminPage() {
     [state],
   );
 
-  const getSaleLinkedExpenseAmount = (expenses: Expense[], saleId: string) =>
+  const isExpenseLinkedToSale = (expense: Expense, sale: { id: string; soldOn: string; items: SaleItem[] }) => {
+    if (expense.saleId === sale.id) return true;
+    if (!expense.saleId) {
+      const notePrefix = `Sale expense for ${sale.items.map((it) => it.itemTitle).join(", ")}`;
+      return expense.note === notePrefix && expense.spentOn === sale.soldOn && expense.amount > 0;
+    }
+    return false;
+  };
+
+  const getSaleLinkedExpenseAmount = (expenses: Expense[], sale: { id: string; soldOn: string; items: SaleItem[] }) =>
     expenses
-      .filter((expense) => expense.saleId === saleId)
+      .filter((expense) => isExpenseLinkedToSale(expense, sale))
       .reduce((sum, expense) => sum + expense.paidAmount, 0);
 
-  const removeSaleLinkedExpenses = (expenses: Expense[], saleId: string) =>
-    expenses.filter((expense) => expense.saleId !== saleId);
+  const removeSaleLinkedExpenses = (expenses: Expense[], sale: { id: string; soldOn: string; items: SaleItem[] }) =>
+    expenses.filter((expense) => !isExpenseLinkedToSale(expense, sale));
 
   const ledgerRows = useMemo(() => {
     type EntryType = "Investment" | "Purchase" | "Sale" | "Expense" | "Withdrawal";
@@ -183,7 +192,15 @@ export default function AdminPage() {
       if (!sale) return prev;
 
       const inventoryRestored = prev.inventory.map((item) => {
-        const soldItem = sale.items.find((it) => it.inventoryItemId === item.id);
+        const soldItem =
+          sale.items.find((it) => it.inventoryItemId === item.id) ||
+          sale.items.find(
+            (it) =>
+              !it.inventoryItemId &&
+              it.itemTitle === item.title &&
+              it.unit === item.unit &&
+              it.unitCost === item.unitCost,
+          );
         if (!soldItem) return item;
         return { ...item, quantity: item.quantity + soldItem.quantity };
       });
@@ -191,7 +208,7 @@ export default function AdminPage() {
       return {
         ...prev,
         inventory: inventoryRestored,
-        expenses: removeSaleLinkedExpenses(prev.expenses, saleId),
+        expenses: removeSaleLinkedExpenses(prev.expenses, sale),
         sales: prev.sales.filter((entry) => entry.id !== saleId),
       };
     });
@@ -382,7 +399,7 @@ export default function AdminPage() {
         const originalSale = prev.sales.find((s) => s.id === editingSaleId);
         if (!originalSale) return prev;
 
-        const originalSaleExpense = getSaleLinkedExpenseAmount(prev.expenses, editingSaleId);
+        const originalSaleExpense = getSaleLinkedExpenseAmount(prev.expenses, originalSale);
         const baselineCash = cashInHand(prev) - originalSale.receivedAmount + originalSaleExpense;
 
         let nextInventory = prev.inventory;
@@ -406,7 +423,7 @@ export default function AdminPage() {
 
         const nextExpenses = [
           ...nextSaleExpense,
-          ...removeSaleLinkedExpenses(prev.expenses, editingSaleId),
+          ...removeSaleLinkedExpenses(prev.expenses, originalSale),
         ];
 
         return {
